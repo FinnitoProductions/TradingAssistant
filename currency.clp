@@ -33,56 +33,19 @@
    (printline "")
 )
 
-(defrule equatePriceWithMovingAverage13 "Determines the stock price and equates it with the moving average from the last 13 readings."
-   (price ?p)
-   (movingAverage13 ?ma13)
-   => 
-   (if (> ?ma13 ?p) then (assert (movingAverage13vsStockPrice greater))
-    else (assert (movingAverage13vsStockPrice lesser))
-   )
-)
-
-(defrule equateMovingAverage13With21 "Equates the moving average from the last 13 readings with that from the last 21."
-   (movingAverage13vsStockPrice ?)
-   (movingAverage13 ?ma13)
-   (movingAverage21 ?ma21)
-   => 
-   (if (> ?ma21 ?ma13) then (assert (movingAverage21vs13 greater))
-    else (assert (movingAverage21vs13 lesser))
-   )
-)
-
-(defrule equateMovingAverage21With34 "Equates the moving average from the last 21 readings with that from the last 34."
-   (movingAverage21vs13 ?)
-   (movingAverage21 ?ma21)
-   (movingAverage34 ?ma34)
-   => 
-   (if (> ?ma34 ?ma21) then (assert (movingAverage34vs21 greater))
-    else (assert (movingAverage34vs21 lesser))
-   )
-)
-
-(defrule equateMovingAverage21With34 "Equates the moving average from the last 21 readings with that from the last 34."
-   (movingAverage21vs13 ?)
-   (movingAverage21 ?ma21)
-   (movingAverage34 ?ma34)
-   => 
-   (if (> ?ma34 ?ma21) then (assert (movingAverage34vs21 greater))
-    else (assert (movingAverage34vs21 lesser))
-   )
-)
 
 /*
 * Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market.
 */
 (defrule movingAverageBuy "Only fires if the user should buy based on the moving average method."
-   (movingAverage13vsStockPrice greater)
-   (movingAverage21vs13 greater)
-   (movingAverage34vs21 greater)
+   (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
    (movingAverage34 ?ma34)
+   (test (> ?ma13 ?p))
+   (test (> ?ma21 ?ma13))
+   (test (> ?ma34 ?ma21))
    =>
    (printSolution "moving average" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13)))
 )
@@ -92,12 +55,13 @@
 * out of the market.
 */
 (defrule movingAverageSell "Only fires if the user should sell based on the moving average method."
-   (movingAverage13vsStockPrice lesser)
-   (movingAverage21vs13 lesser)
-   (movingAverage34vs21 lesser)
+   (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
    (movingAverage34 ?ma34)
+   (test (< ?ma13 ?p))
+   (test (< ?ma21 ?ma13))
+   (test (< ?ma34 ?ma21))
    =>
    (printSolution "moving average" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34)))
 )
