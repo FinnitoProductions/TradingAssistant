@@ -14,8 +14,12 @@
 (do-backward-chaining movingAverage13)
 (do-backward-chaining movingAverage21)
 (do-backward-chaining movingAverage34)
+(do-backward-chaining upperBollingerBand)
+(do-backward-chaining lowerBollingerBand)
+(do-backward-chaining midBollingerBand)
 
 (defglobal ?*INVALID_NUMBER_INPUT_MESSAGE* = "Your input must be a number. Please try again.")
+(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the percent either above or below the top Bollinger band at which you should take a profit or a loss
 
 /*
 * Starts up the system and explains to the user how to use it.
@@ -58,6 +62,16 @@
    )
 )
 
+(defrule equateMovingAverage21With34 "Equates the moving average from the last 21 readings with that from the last 34."
+   (movingAverage21vs13 ?)
+   (movingAverage21 ?ma21)
+   (movingAverage34 ?ma34)
+   => 
+   (if (> ?ma34 ?ma21) then (assert (movingAverage34vs21 greater))
+    else (assert (movingAverage34vs21 lesser))
+   )
+)
+
 /*
 * Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market.
@@ -70,7 +84,7 @@
    (movingAverage21 ?ma21)
    (movingAverage34 ?ma34)
    =>
-   (printSolution "moving average" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13) 2))
+   (printSolution "moving average" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13)))
 )
 
 /*
@@ -85,7 +99,7 @@
    (movingAverage21 ?ma21)
    (movingAverage34 ?ma34)
    =>
-   (printSolution "moving average" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34) 2))
+   (printSolution "moving average" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34)))
 )
 
 /*
@@ -98,12 +112,68 @@
    (movingAverage34vs21 ?z &:(or (not (eq ?x ?y)) (not (eq ?y ?z) (not (eq ?x ?z))))) ; ?z represents whether the 34-reading moving average was lesser or greater than the 21-reading moving average
    =>
    (assert (movingAverage no))
-   (printline "The moving average failed as a viable strategy. Let's move onto the ______ strategy.")
+   (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
+)
+
+(defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
+   (movingAverage no)
+   (price ?p)
+   (upperBollingerBand ?upperBB)
+   (lowerBollingerBand ?lowerBB)
+   =>
+   (if (and (> ?p ?lowerBB) (< ?p ?upperBB)) then (assert (priceBetweenUpperAndLowerBB yes))
+    else (assert (priceBetweenUpperAndLowerBB no))
+   )
+)
+
+(defrule equatePriceWithMidBollingerBand "Determines whether the price is above or below the mid Bollinger band."
+   (movingAverage no)
+   (priceBetweenUpperAndLowerBB ?)
+   (price ?p)
+   (midBollingerBand ?midBB)
+   =>
+   (if (> ?p ?midBB) then (assert (pricevsMidBB greater))
+    else (assert (pricevsMidBB lesser))
+   )
+)
+
+/*
+* Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
+* out of the market, using the Bollinger band method.
+*/
+(defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
+   (movingAverage no)
+   (priceBetweenUpperAndLowerBB yes)
+   (pricevsMidBB lesser)
+   (price ?p)
+   (upperBollingerBand ?upperBB)
+   (lowerBollingerBand ?lowerBB)
+   (midBollingerBand ?midBB)
+   =>
+   (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
+   (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
+)
+
+/*
+* Fires when the user should sell with a certain amount and lets them know when they should stop and when they should pull 
+* out of the market, using the Bollinger band method.
+*/
+(defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
+   (movingAverage no)
+   (priceBetweenUpperAndLowerBB yes)
+   (pricevsMidBB greater)
+   (price ?p)
+   (upperBollingerBand ?upperBB)
+   (lowerBollingerBand ?lowerBB)
+   (midBollingerBand ?midBB)
+   =>
+   (bind ?stopLoss (+ ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
+   (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
 )
 
 /*
 * The following rules are all backward-chained and ask the user about a given piece of market information when
-* it is necessary for a rule.
+* it is necessary to determine whether a rule can fire.
 */
 
 (defrule askPrice "Asks about the current price."
@@ -136,6 +206,32 @@
    =>
    (assert (movingAverage34 (askMovingAverage 34)))
 )
+
+/*
+* Asks the user for the Bollinger band given the location (mid, upper, or lower).
+*/
+(deffunction askBollingerBand (?location)
+   (return (askForNumber (str-cat "What is the current value of the " ?location "-Bollinger Band")))
+)
+
+(defrule askMidBollingerBand "Asks about the mid-Bollinger band."
+   (need-midBollingerBand ?)
+   =>
+   (assert (midBollingerBand (askBollingerBand "mid")))
+)
+
+(defrule askUpperBollingerBand "Asks about the upper-Bollinger band."
+   (need-upperBollingerBand ?)
+   =>
+   (assert (upperBollingerBand (askBollingerBand "upper")))
+)
+
+(defrule askLowerBollingerBand "Asks about the lower-Bollinger band."
+   (need-lowerBollingerBand ?)
+   =>
+   (assert (lowerBollingerBand (askBollingerBand "lower")))
+)
+
 
 /*
 * Fires when the system has no more questions to ask the user - this indicates they should wait and return to the market
@@ -175,6 +271,7 @@
    (printline "")
    (printline (str-cat "Based on the " ?calculation " calculation, you should " ?action " at " ?actionAmount " and either stop at " ?stopAmount " or take a profit at " ?profitAmount "."))
    (assert (solutionFound))
+   (return)
 )
 
 /*
