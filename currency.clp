@@ -76,63 +76,8 @@
    (movingAverage34vs21 ?z &:(or (not (eq ?x ?y)) (not (eq ?y ?z) (not (eq ?x ?z))))) ; ?z represents whether the 34-reading moving average was lesser or greater than the 21-reading moving average
    =>
    (assert (movingAverage no))
+   (batch finalproject/bollingerbands.clp)
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
-)
-
-(defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
-   (movingAverage no)
-   (price ?p)
-   (upperBollingerBand ?upperBB)
-   (lowerBollingerBand ?lowerBB)
-   =>
-   (if (and (> ?p ?lowerBB) (< ?p ?upperBB)) then (assert (priceBetweenUpperAndLowerBB yes))
-    else (assert (priceBetweenUpperAndLowerBB no))
-   )
-)
-
-(defrule equatePriceWithMidBollingerBand "Determines whether the price is above or below the mid Bollinger band."
-   (movingAverage no)
-   (priceBetweenUpperAndLowerBB ?)
-   (price ?p)
-   (midBollingerBand ?midBB)
-   =>
-   (if (> ?p ?midBB) then (assert (pricevsMidBB greater))
-    else (assert (pricevsMidBB lesser))
-   )
-)
-
-/*
-* Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
-* out of the market, using the Bollinger band method.
-*/
-(defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
-   (movingAverage no)
-   (priceBetweenUpperAndLowerBB yes)
-   (pricevsMidBB lesser)
-   (price ?p)
-   (upperBollingerBand ?upperBB)
-   (lowerBollingerBand ?lowerBB)
-   (midBollingerBand ?midBB)
-   =>
-   (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
-   (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
-)
-
-/*
-* Fires when the user should sell with a certain amount and lets them know when they should stop and when they should pull 
-* out of the market, using the Bollinger band method.
-*/
-(defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
-   (movingAverage no)
-   (priceBetweenUpperAndLowerBB yes)
-   (pricevsMidBB greater)
-   (price ?p)
-   (upperBollingerBand ?upperBB)
-   (lowerBollingerBand ?lowerBB)
-   (midBollingerBand ?midBB)
-   =>
-   (bind ?stopLoss (+ ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
-   (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
 )
 
 /*
@@ -170,32 +115,6 @@
    =>
    (assert (movingAverage34 (askMovingAverage 34)))
 )
-
-/*
-* Asks the user for the Bollinger band given the location (mid, upper, or lower).
-*/
-(deffunction askBollingerBand (?location)
-   (return (askForNumber (str-cat "What is the current value of the " ?location "-Bollinger Band")))
-)
-
-(defrule askMidBollingerBand "Asks about the mid-Bollinger band."
-   (need-midBollingerBand ?)
-   =>
-   (assert (midBollingerBand (askBollingerBand "mid")))
-)
-
-(defrule askUpperBollingerBand "Asks about the upper-Bollinger band."
-   (need-upperBollingerBand ?)
-   =>
-   (assert (upperBollingerBand (askBollingerBand "upper")))
-)
-
-(defrule askLowerBollingerBand "Asks about the lower-Bollinger band."
-   (need-lowerBollingerBand ?)
-   =>
-   (assert (lowerBollingerBand (askBollingerBand "lower")))
-)
-
 
 /*
 * Fires when the system has no more questions to ask the user - this indicates they should wait and return to the market
