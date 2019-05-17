@@ -4,8 +4,8 @@
 * Finn Frankis
 * May 17, 2019
 */
+
 (defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
-   (movingAverage no)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
@@ -20,7 +20,6 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
-   (movingAverage no)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
@@ -37,7 +36,6 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
-   (movingAverage no)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
@@ -46,7 +44,18 @@
    (test (> ?p ?midBB))
    =>
    (bind ?stopLoss (+ ?upperBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?upperBB ?midBB))))
-   (printSolution "bollinger band" "sell" ?upperBB ?stopLoss ?midBB)
+   (printSolution "Bollinger Band" "sell" ?upperBB ?stopLoss ?midBB)
+)
+
+/*
+* Fires when the Bollinger Band method is inviable, allowing any future strategies to be executed.
+* The Bollinger Band method is only inviable if the price is not within the Bollinger band or 
+* if 
+*/
+(defrule bollingerBandInviable "Fires if the moving average cannot determine a plan of action."
+   (priceBetweenUpperAndLowerBB no)
+   =>
+   (printline "The Bollinger Band failed as a viable strategy. Let's move onto the moving strategy.")
 )
 
 /*
