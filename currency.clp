@@ -10,16 +10,10 @@
 
 (batch util/utilities.clp)
 
-(do-backward-chaining price)
-(do-backward-chaining movingAverage13)
-(do-backward-chaining movingAverage21)
-(do-backward-chaining movingAverage34)
-(do-backward-chaining upperBollingerBand)
-(do-backward-chaining lowerBollingerBand)
-(do-backward-chaining midBollingerBand)
-
 (defglobal ?*INVALID_NUMBER_INPUT_MESSAGE* = "Your input must be a number. Please try again.")
-(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the percent either above or below the top Bollinger band at which you should take a profit or a loss
+(defglobal ?*INVALID_YESNO_INPUT_MESSAGE* = "Your input must be either \"yes\" or \"no\". Please try again.")
+(defglobal ?*VALID_YES_CHARACTER* = "y") ; will accept any string starting with this as indicating "yes"
+(defglobal ?*VALID_NO_CHARACTER* = "n") ; will accept any string starting with this as indicating "no"
 
 /*
 * Starts up the system and explains to the user how to use it.
@@ -49,7 +43,7 @@
 
 /*
 * Asks the user to input a number. If they input a valid number (either an integer or a decimal value), will return this value.
-* If they do not input a valid number, will warn the user and return FALSE.
+* If they do not input a valid number, will warn the user and ask again.
 */
 (deffunction askForNumber (?question)
    (bind ?returnVal (askQuestion ?question))
@@ -60,6 +54,55 @@
    )
 
    (return ?returnVal)
+)
+
+/*
+* Requests the user for a response to a given question. If the input starts with either "y" or "n," not case-sensitive,
+* returns the starting character. Otherwise returns FALSE.
+*/
+(deffunction requestValidatedYesNo (?questionVal)
+   (bind ?returnVal FALSE) ; returns FALSE if the input is invalid
+   (bind ?userInput (askQuestion ?questionVal))
+   (bind ?firstCharacter (lowcase (sub-string 1 1 ?userInput))) ; extracts the first character from the user's response
+
+   (bind ?isYesChar (eq ?firstCharacter ?*VALID_YES_CHARACTER*))
+   (bind ?isNoChar (eq ?firstCharacter ?*VALID_NO_CHARACTER*))
+
+   (if ?isYesChar then (bind ?returnVal yes)
+    elif ?isNoChar then (bind ?returnVal no)
+   )
+
+   (return ?returnVal)
+) ; requestValidatedYesNo (?questionVal)
+
+/*
+* Asks the user to input either yes or no (or anything starting with "y" or "n"). If they input anything starting with
+* "y" or "n", will return either the symbol "yes" or "no." If the user does not input a valid input, will warn the user
+* and ask again.
+*/
+(deffunction askForYesNo (?question)
+   (bind ?returnVal (requestValidatedYesNo ?question))
+
+   (while (eq ?returnVal FALSE) ; while the input is invalid, continually asks for new input until it becomes valid
+      (printline ?*INVALID_YESNO_INPUT_MESSAGE*) 
+      (bind ?returnVal (requestValidatedYesNo ?question))
+   )
+
+   (return ?returnVal)
+)
+
+/*
+* Asserts the result of a comparison between two values into the factbase with the format (?factName lesser), (?factName greater),
+* or (?factName equal). If ?firstVal is less than ?secondVal, will assert with "lesser"; if ?firstVal is greater than ?secondVal,
+* will assert with "greater".
+*/
+(deffunction assertComparison (?factName ?firstVal ?secondVal)
+   (if (< ?firstVal ?secondVal) then (assert-string (str-cat "(" ?factName " lesser)"))
+    elif (> ?firstVal ?secondVal) then (assert-string (str-cat "(" ?factName " greater)"))
+    else (assert-string (str-cat "(" ?factName " equal)"))
+   )
+
+   (return)
 )
 
 /*
