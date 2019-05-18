@@ -130,7 +130,9 @@
 * Begins the system by clearing out the rule engine and running it.
 */
 (deffunction runSystem ()
+   (clear)
    (reset)
+   (batch finalproject/currency.clp)
    (run)
    (endSystem)
    (return)
