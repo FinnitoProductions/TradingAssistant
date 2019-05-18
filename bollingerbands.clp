@@ -5,6 +5,12 @@
 * May 17, 2019
 */
 
+(do-backward-chaining upperBollingerBand)
+(do-backward-chaining lowerBollingerBand)
+(do-backward-chaining midBollingerBand)
+
+(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the percent either above or below the top Bollinger band at which you should take a profit or a loss
+
 (defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
    (price ?p)
    (upperBollingerBand ?upperBB)
@@ -56,6 +62,7 @@
    (priceBetweenUpperAndLowerBB no)
    =>
    (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
+   (batch finalproject/crossover.clp)
 )
 
 /*
