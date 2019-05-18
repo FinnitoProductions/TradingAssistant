@@ -20,11 +20,11 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
+   (priceBetweenUpperAndLowerBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
-   (priceBetweenUpperAndLowerBB yes)
    (test (< ?p ?midBB))
    =>
    (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
@@ -36,11 +36,11 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
+   (priceBetweenUpperAndLowerBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
-   (priceBetweenUpperAndLowerBB yes)
    (test (> ?p ?midBB))
    =>
    (bind ?stopLoss (+ ?upperBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?upperBB ?midBB))))
@@ -55,7 +55,7 @@
 (defrule bollingerBandInviable "Fires if the moving average cannot determine a plan of action."
    (priceBetweenUpperAndLowerBB no)
    =>
-   (printline "The Bollinger Band failed as a viable strategy. Let's move onto the moving strategy.")
+   (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
 )
 
 /*
