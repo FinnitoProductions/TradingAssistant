@@ -9,7 +9,7 @@
 (do-backward-chaining lowerBollingerBand)
 (do-backward-chaining midBollingerBand)
 
-(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the percent either above or below the top Bollinger band at which you should take a profit or a loss
+(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
 
 (defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
    (price ?p)

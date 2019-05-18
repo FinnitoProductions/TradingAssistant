@@ -10,7 +10,7 @@
 (do-backward-chaining movingAverage21)
 (do-backward-chaining movingAverage34)
 
-(defrule equatePriceWithMovingAverage13 "Determines the stock price and equates it with the moving average from the last 13 readings."
+(defrule equatePriceAndMovingAveragesFib "Equates the stock price as well as the 13-period, 21-period, and 34-period moving averages with one another."
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -21,11 +21,7 @@
    (assertComparison movingAverage34vs21 ?ma34 ?ma21)
 )
 
-/*
-* Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
-* out of the market.
-*/
-(defrule movingAverageBuy "Only fires if the user should buy based on the moving average method."
+(defrule movingAverageFibBuy "Only fires if the user should buy based on the moving average method."
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -34,14 +30,10 @@
    (movingAverage21vs13 greater)
    (movingAverage34vs21 greater)
    =>
-   (printSolution "moving average" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13)))
+   (printSolution "moving average Fibonacci" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13)))
 )
 
-/*
-* Fires when the user should sell with a certain amount and lets them know when they should stop and when they should pull 
-* out of the market.
-*/
-(defrule movingAverageSell "Only fires if the user should sell based on the moving average method."
+(defrule movingAverageFibSell "Only fires if the user should sell based on the moving average method."
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -50,7 +42,7 @@
    (movingAverage21vs13 lesser)
    (movingAverage34vs21 lesser)
    =>
-   (printSolution "moving average" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34)))
+   (printSolution "moving average Fibonacci" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34)))
 )
 
 /*
@@ -58,7 +50,7 @@
 * The average method is only inviable if the three relevant comparisons of moving averages and prices are not either
 * all lesser or all greater.
 */
-(defrule movingAverageInviable "Fires if the moving average cannot determine a plan of action."
+(defrule movingAverageFibInviable "Fires if the moving average cannot determine a plan of action."
    (movingAverage13vsStockPrice ?x) 
    (movingAverage21vs13 ?y) 
    (movingAverage34vs21 ?z)

@@ -106,22 +106,6 @@
 )
 
 /*
-* Generates an n-period backward-chained moving average rule and dynamically adds it to the rulebase. The rule simply
-* asks the user about a given moving average (if necessary)
-*
-* For example, a 5-period moving average rule would look as follows:
-* 
-* (defrule askMovingAverage5 "Asks about the current moving average based on the last 5 readings."
-*   (need-movingAverage5 ?)
-*   =>
-*   (assert (movingAverage5 (askMovingAverage 13)))
-* )
-*/
-(deffunction generateMovingAverageRule (?period)
-   
-)
-
-/*
 * Prints out the solution based on the type of calculation performed (like moving average or Bollinger band), the action that
 * should be performed (either buying or selling), the amount of money which should be involved at this action, 
 * the amount of money after which the user should simply stop, and the amount of money after which the user should simply
@@ -151,5 +135,3 @@
    (endSystem)
    (return)
 ) ; runSystem ()
-
-(runSystem)
