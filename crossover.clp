@@ -61,7 +61,8 @@
       )
    )
    =>
-   (printline "The crossover failed as a viable strategy. Let's wait.")
+   (printline "The crossover failed as a viable strategy. Let's move onto the momentum strategy.")
+   (batch finalproject/momentum.clp)
 )
 
 (defrule askMovingAverage5Crossed20 "Asks the user whether the 5-period moving average has crossed the 20-period moving average."

@@ -25,7 +25,8 @@
    =>
    (printline "Welcome to the stock market helper.")
    (printline "Our first strategy will be to study the recent moving averages using the Fibonacci sequence.")
-   (printline "Find a chart indicating the past 10 minutes worth of moving averages and answer the following questions.")
+   (printline "Find a chart comparing the US Dollar to the Canadian Dollar over the past 10 minutes.")
+   (printline "Display three Fibonacci moving averages (13, 21, and 34) and answer the following questions.")
    (printline "")
    (batch finalproject/movingaverage.clp)
 )
