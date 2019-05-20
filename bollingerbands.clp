@@ -9,7 +9,7 @@
 (do-backward-chaining lowerBollingerBand)
 (do-backward-chaining midBollingerBand)
 
-(defglobal ?*BOLLINGER_BAND_GAP_PERCENT* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
+(defglobal ?*BOLLINGER_BAND_GAP_FACTOR* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
 
 (defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
    (price ?p)
@@ -33,7 +33,7 @@
    (midBollingerBand ?midBB)
    (test (< ?p ?midBB))
    =>
-   (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?midBB ?lowerBB))))
+   (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_FACTOR* (- ?midBB ?lowerBB))))
    (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
 )
 
@@ -49,7 +49,7 @@
    (midBollingerBand ?midBB)
    (test (> ?p ?midBB))
    =>
-   (bind ?stopLoss (+ ?upperBB (* ?*BOLLINGER_BAND_GAP_PERCENT* (- ?upperBB ?midBB))))
+   (bind ?stopLoss (+ ?upperBB (* ?*BOLLINGER_BAND_GAP_FACTOR* (- ?upperBB ?midBB))))
    (printSolution "Bollinger Band" "sell" ?upperBB ?stopLoss ?midBB)
 )
 

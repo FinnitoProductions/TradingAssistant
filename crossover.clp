@@ -10,7 +10,7 @@
 (do-backward-chaining movingAverage20)
 (do-backward-chaining movingAverage30)
 
-(defglobal ?*CROSSOVER_GAP_PERCENT* = 2) ; the factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit
+(defglobal ?*CROSSOVER_GAP_FACTOR* = 2) ; the factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit
 
 (defrule equateMovingAveragesCrossover "Equates the stock price as well as the 13-period, 21-period, and 34-period moving averages with one another."
    (movingAverage5Crossed20 yes)
@@ -31,7 +31,7 @@
    (movingAverage5vs20 greater)
    (movingAverage20vs30 greater)
    =>
-   (printSolution "moving average crossover" "buy" ?p (- ?p (- ?ma20 ?ma30)) (+ ?p (* ?*CROSSOVER_GAP_PERCENT* (- ?ma20 ?ma30))))
+   (printSolution "moving average crossover" "buy" ?p (- ?p (- ?ma20 ?ma30)) (+ ?p (* ?*CROSSOVER_GAP_FACTOR* (- ?ma20 ?ma30))))
 )
 
 (defrule crossoverSell "Only fires if the user should sell based on the crossover method."
@@ -43,7 +43,7 @@
    (movingAverage5vs20 lesser)
    (movingAverage20vs30 lesser)
    =>
-   (printSolution "moving average crossover" "sell" ?p (+ ?p (- ?ma20 ?ma30)) (- ?p (* ?*CROSSOVER_GAP_PERCENT* (- ?ma20 ?ma30))))
+   (printSolution "moving average crossover" "sell" ?p (+ ?p (- ?ma20 ?ma30)) (- ?p (* ?*CROSSOVER_GAP_FACTOR* (- ?ma20 ?ma30))))
 )
 
 /*

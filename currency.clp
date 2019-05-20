@@ -1,5 +1,7 @@
 /*
-* Determines whether the user should buy, sell, or wait based on the current state of the market.
+* Determines whether the user should buy, sell, or wait based on the current state of the market. 
+* Applies four distinct strategies after asking the user several questions to determine the user's optimal
+* path.
 * 
 * Finn Frankis
 * April 2, 2019
