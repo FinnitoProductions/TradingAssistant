@@ -1,5 +1,9 @@
 /*
 * Contains all the rules and functions related to solving the problem using the moving average crossover strategy.
+*
+* The moving average crossover strategy is viable if the 20-period and 5-period moving averages have crossed.
+* Using this, it compares the 5-period and 20-moving averages to the current value of the 30-period moving average to
+* determine whether the user can buy or sell, or if the system is inconclusive.
 * 
 * Finn Frankis
 * May 18, 2019

@@ -1,5 +1,8 @@
 /*
 * Contains all the rules and functions related to solving the problem using the momentum strategy.
+*
+* The momentum strategy determines whether the current momentum (rate of change) of the market exceeds a given rate 
+* in magnitude. If it exceeds this rate, the market is volatile and the user is ready to buy or sell.
 * 
 * Finn Frankis
 * May 19, 2019

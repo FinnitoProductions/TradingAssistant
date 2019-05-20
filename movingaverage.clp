@@ -1,6 +1,10 @@
 /*
 * Contains all the rules and functions related to solving the problem using the moving average Fibonacci strategy.
 * 
+* The moving average Fibonacci strategy compares the price with the 13-period, 21-period, and 34-period moving averages. The user can
+* sell using this strategy if, in the order above, each one is greater than the next. The user can sell if, in the order above
+* each one is lesser than the next.
+* 
 * Finn Frankis
 * May 17, 2019
 */

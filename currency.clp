@@ -1,5 +1,8 @@
 /*
-* Determines whether the user should buy, sell, or wait based on the current state of the market. 
+* Determines whether the user should buy, sell, or wait based on the current state of the market. If a decision is
+* determined, tells the user when they should exit the market with a profit and when they should accept a stop loss and
+* exit the market before things get too bad.
+*
 * Applies four distinct strategies after asking the user several questions to determine the user's optimal
 * path.
 * 

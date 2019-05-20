@@ -1,6 +1,10 @@
 /*
 * Contains all the rules and functions related to solving the problem using the Bollinger Band strategy.
 * 
+* The Bollinger Band strategy first determines whether the current price is between the upper and lower Bollinger Bands.
+* If so, the user will buy if the price is below the mid (average Bollinger Band), and the user will sell if the price is 
+* above the mid Bollinger Band. 
+*
 * Finn Frankis
 * May 17, 2019
 */
