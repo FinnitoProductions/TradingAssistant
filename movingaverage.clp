@@ -14,6 +14,10 @@
 (do-backward-chaining movingAverage21)
 (do-backward-chaining movingAverage34)
 
+/*
+* Compares the price to the 13-period moving average, the 21-period moving average to the 13-period moving average, and the 34-period
+* moving average to the 21-period moving average, asserting these comparisons as facts.
+*/
 (defrule equatePriceAndMovingAveragesFib "Equates the stock price as well as the 13-period, 21-period, and 34-period moving averages with one another."
    (price ?p)
    (movingAverage13 ?ma13)
@@ -25,19 +29,17 @@
    (assertComparison movingAverage34vs21 ?ma34 ?ma21)
 )
 
+/*
+* Fires when the user should buy when the price crosses the 13-period moving average, using the moving average strategy.
+*
+* If the 34-period moving average is below the 21-period moving average, the 21-period moving average is below the 
+* 13-period moving average, and the 13-period moving average is below the stock price, this is indicative that the market
+* is in an down-trend and thus the user should buy because it is likely to come back up (stabilize) soon.
+*
+* The stop loss will be when the price crosses the 34-period moving average. 
+* The profit is twice the distance between the 13-period moving average and the 34-period moving average.
+*/
 (defrule movingAverageFibBuy "Only fires if the user should buy based on the moving average method."
-   (price ?p)
-   (movingAverage13 ?ma13)
-   (movingAverage21 ?ma21)
-   (movingAverage34 ?ma34)
-   (movingAverage13vsStockPrice greater)
-   (movingAverage21vs13 greater)
-   (movingAverage34vs21 greater)
-   =>
-   (printSolution "moving average Fibonacci" "buy" ?ma13 ?ma34 (* (- ?ma34 ?ma13)))
-)
-
-(defrule movingAverageFibSell "Only fires if the user should sell based on the moving average method."
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -46,7 +48,29 @@
    (movingAverage21vs13 lesser)
    (movingAverage34vs21 lesser)
    =>
-   (printSolution "moving average Fibonacci" "sell" ?ma13 ?ma34 (* (- ?ma13 ?ma34)))
+   (printSolution "moving average Fibonacci" "buy" ?ma13 (* (- ?ma34 ?ma13)) ?ma34)
+)
+
+/*
+* Fires when the user should sell when the price crosses the 13-period moving average, using the moving average strategy.
+*
+* If the 34-period moving average is above the 21-period moving average, the 21-period moving average is above the 
+* 13-period moving average, and the 13-period moving average is above the stock price, this is indicative that the market
+* is in an up-trend and thus the user should sell because it is likely to come back down (stabilize) soon.
+*
+* The stop loss will be when the price crosses the 34-period moving average. 
+* The profit is twice the distance between the 13-period moving average and the 34-period moving average.
+*/
+(defrule movingAverageFibSell "Only fires if the user should sell based on the moving average method."
+   (price ?p)
+   (movingAverage13 ?ma13)
+   (movingAverage21 ?ma21)
+   (movingAverage34 ?ma34)
+   (movingAverage13vsStockPrice greater)
+   (movingAverage21vs13 greater)
+   (movingAverage34vs21 greater)
+   =>
+   (printSolution "moving average Fibonacci" "sell" ?ma13 (* (- ?ma13 ?ma34)) ?ma34)
 )
 
 /*
@@ -58,7 +82,7 @@
    (movingAverage13vsStockPrice ?x) 
    (movingAverage21vs13 ?y) 
    (movingAverage34vs21 ?z)
-   (test (not (or (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)) (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)))))
+   (test (not (or (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)) (and (eq ?x greater) (eq ?y greater) (eq ?z greater)))))
    =>
    (batch finalproject/bollingerbands.clp)
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
@@ -69,14 +93,9 @@
 * it is necessary to determine whether a rule can fire.
 */
 
-(defrule askPrice "Asks about the current price."
-   (need-price ?)
-   =>
-   (assert (price (askForNumber "What is the current price of stock")))
-)
-
 /*
-* Asks the user for the moving average based on a given number of readings.
+* Asks the user for the moving average based on a given number of readings ?readingNum. Returns the numeric result
+* of this request.
 */
 (deffunction askMovingAverage (?readingNum)
    (return (askForNumber (str-cat "What is the current moving average based on the last " ?readingNum " readings")))
