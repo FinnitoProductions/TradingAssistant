@@ -16,6 +16,10 @@
 
 (defglobal ?*CROSSOVER_GAP_FACTOR* = 2) ; the factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit
 
+/*
+* Compares the 5-period moving average to the 20-period moving average and the 20-period moving average to the 30-period moving average
+* and asserts the comparisons as facts.
+*/
 (defrule equateMovingAveragesCrossover "Equates the stock price as well as the 13-period, 21-period, and 34-period moving averages with one another."
    (movingAverage5Crossed20 yes)
    (movingAverage5 ?ma5)
@@ -26,6 +30,15 @@
    (assertComparison movingAverage20vs30 ?ma20 ?ma30)
 )
 
+/*
+* Fires when the user should buy at the current price using the crossover strategy.
+*
+* If the 20-period moving average has crossed below the 5-period moving average and the 30-period moving average is below
+* the 20-period moving average, then the user can buy at the current price. 
+*
+* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average below the current price;
+* the user's profit will be double that absolute difference above the current price.
+*/
 (defrule crossoverBuy "Only fires if the user should buy based on the crossover method."
    (movingAverage5Crossed20 yes)
    (price ?p)
@@ -38,6 +51,15 @@
    (printSolution "moving average crossover" "buy" ?p (- ?p (- ?ma20 ?ma30)) (+ ?p (* ?*CROSSOVER_GAP_FACTOR* (- ?ma20 ?ma30))))
 )
 
+/*
+* Fires when the user should sell at the current price using the crossover strategy.
+*
+* If the 20-period moving average has crossed above the 5-period moving average and the 30-period moving average is above
+* the 20-period moving average, then the user can sell at the current price. 
+*
+* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average above the current price;
+* the user's profit will be double that absolute difference below the current price.
+*/
 (defrule crossoverSell "Only fires if the user should sell based on the crossover method."
    (movingAverage5Crossed20 yes)
    (price ?p)
