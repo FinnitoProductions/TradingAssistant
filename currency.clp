@@ -35,6 +35,16 @@
 )
 
 /*
+* Fires when the system needs to know the current price of the market.
+*/
+(defrule askPrice "Asks about the current price."
+   (need-price ?)
+   =>
+   (assert (price (askForNumber "What is the current price of stock")))
+)
+
+
+/*
 * Fires when the system has no more questions to ask the user - this indicates they should wait and return to the market
 * some time later.
 */

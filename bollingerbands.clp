@@ -59,11 +59,17 @@
 
 /*
 * Fires when the Bollinger Band method is inviable, allowing any future strategies to be executed.
-* The Bollinger Band method is only inviable if the price is not within the Bollinger band or 
-* if 
+*
+* The Bollinger Band method is only inviable if the price is not within the Bollinger band,
+* if the price is exactly equal to the mid-Bollinger band, or if the lower Bollinger band is above
+* the upper Bollinger band.
 */
 (defrule bollingerBandInviable "Fires if the moving average cannot determine a plan of action."
-   (priceBetweenUpperAndLowerBB no)
+   (price ?p)
+   (upperBollingerBand ?upperBB)
+   (lowerBollingerBand ?lowerBB)
+   (midBollingerBand ?midBB)
+   (or (priceBetweenUpperAndLowerBB no) (test (> ?lowerBB ?upperBB)) (test (eq ?p ?midBB)))
    =>
    (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
    (batch finalproject/crossover.clp)
