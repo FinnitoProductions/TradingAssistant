@@ -15,6 +15,12 @@
 (do-backward-chaining movingAverage34)
 
 /*
+* The factor of the difference between the 20-period and the 30-period moving average either above or below the price 
+* at which the user should take a profit.
+*/ 
+(defglobal ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* = 2)
+
+/*
 * Compares the price to the 13-period moving average, the 21-period moving average to the 13-period moving average, and the 34-period
 * moving average to the 21-period moving average, asserting these comparisons as facts.
 */
@@ -40,6 +46,7 @@
 * The profit is twice the distance between the 13-period moving average and the 34-period moving average.
 */
 (defrule movingAverageFibBuy "Only fires if the user should buy based on the moving average method."
+   (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -48,7 +55,7 @@
    (movingAverage21vs13 lesser)
    (movingAverage34vs21 lesser)
    =>
-   (printSolution "moving average Fibonacci" "buy" ?ma13 (* (- ?ma34 ?ma13)) ?ma34)
+   (printSolution "moving average Fibonacci" "buy" ?ma13 ?ma34 (+ ?ma13 (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma13 ?ma34))))
 )
 
 /*
@@ -62,6 +69,7 @@
 * The profit is twice the distance between the 13-period moving average and the 34-period moving average.
 */
 (defrule movingAverageFibSell "Only fires if the user should sell based on the moving average method."
+   (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
    (price ?p)
    (movingAverage13 ?ma13)
    (movingAverage21 ?ma21)
@@ -70,7 +78,7 @@
    (movingAverage21vs13 greater)
    (movingAverage34vs21 greater)
    =>
-   (printSolution "moving average Fibonacci" "sell" ?ma13 (* (- ?ma13 ?ma34)) ?ma34)
+   (printSolution "moving average Fibonacci" "sell" ?ma13 ?ma34 (- ?ma13 (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma34 ?ma13))))
 )
 
 /*
@@ -79,19 +87,16 @@
 * all lesser or all greater.
 */
 (defrule movingAverageFibInviable "Fires if the moving average cannot determine a plan of action."
+   (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
    (movingAverage13vsStockPrice ?x) 
    (movingAverage21vs13 ?y) 
    (movingAverage34vs21 ?z)
    (test (not (or (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)) (and (eq ?x greater) (eq ?y greater) (eq ?z greater)))))
    =>
+   (assert (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
    (batch finalproject/bollingerbands.clp)
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
 )
-
-/*
-* The following rules are all backward-chained and ask the user about a given piece of market information when
-* it is necessary to determine whether a rule can fire.
-*/
 
 /*
 * Asks the user for the moving average based on a given number of readings ?readingNum. Returns the numeric result
@@ -100,6 +105,11 @@
 (deffunction askMovingAverage (?readingNum)
    (return (askForNumber (str-cat "What is the current moving average based on the last " ?readingNum " readings")))
 )
+
+/*
+* The following rules are all backward-chained and ask the user about a given piece of market information when
+* it is necessary to determine whether a rule can fire.
+*/
 
 (defrule askMovingAverage13 "Asks about the current moving average based on the last 13 readings."
    (need-movingAverage13 ?)

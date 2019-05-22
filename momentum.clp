@@ -16,6 +16,7 @@
 (defglobal ?*MOMENTUM_STOPLOSS_RANGE* = 0.002) ; the amount above or below the price after which the user should take a profit
 
 (defrule momentumBuy "Only fires when the user should buy based on the momentum strategy."
+   (not (momentum inviable)) ; this rule cannot fire if the momentum strategy has already been deemed inviable
    (price ?p)
    (momentum ?m)
    (test (< ?m ?*MAXIMUM_MOMENTUM_BUY*))
@@ -24,6 +25,7 @@
 )
 
 (defrule momentumSell "Only fires when the user should sell based on the momentum strategy."
+   (not (momentum inviable)) ; this rule cannot fire if the momentum strategy has already been deemed inviable
    (price ?p)
    (momentum ?m)
    (test (> ?m ?*MINIMUM_MOMENTUM_SELL*))
@@ -31,6 +33,19 @@
    (printSolution "momentum" "sell" ?p (+ ?p ?*MOMENTUM_STOPLOSS_RANGE*) (- ?p ?*MOMENTUM_PROFIT_RANGE*))
 )
 
+(defrule momentumInviable "Fires if the momentum cannot be used to determine a strategy."
+   (not (momentum inviable)) ; this rule cannot fire if the momentum strategy has already been deemed inviable
+   (price ?p)
+   (momentum ?m)
+   (test (and (< ?m ?*MINIMUM_MOMENTUM_SELL*) (> ?m ?*MAXIMUM_MOMENTUM_BUY*)))
+   =>
+   (printline "The momentum failed as a viable strategy.")
+   (assert (momentum inviable))
+)
+
+/*
+* Applies backward-chaining to ask the user about the current market momentum when it is needed for the execution of a rule.
+*/
 (defrule askMomentum "Asks about the current momentum (rate of change) of the market."
    (need-momentum ?)
    =>

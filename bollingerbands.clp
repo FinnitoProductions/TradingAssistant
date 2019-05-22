@@ -30,6 +30,7 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
+   (not (bollingerBand inviable))
    (priceBetweenUpperAndLowerBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
@@ -46,6 +47,7 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
+   (not (bollingerBand inviable))
    (priceBetweenUpperAndLowerBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
@@ -64,7 +66,8 @@
 * if the price is exactly equal to the mid-Bollinger band, or if the lower Bollinger band is above
 * the upper Bollinger band.
 */
-(defrule bollingerBandInviable "Fires if the moving average cannot determine a plan of action."
+(defrule bollingerBandInviable "Fires if the Bollinger Band cannot determine a plan of action."
+   (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
@@ -72,6 +75,7 @@
    (or (priceBetweenUpperAndLowerBB no) (test (> ?lowerBB ?upperBB)) (test (eq ?p ?midBB)))
    =>
    (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
+   (assert (bollingerBand inviable)) ; asserts inviability so that no future Bollinger Band rules can be fired
    (batch finalproject/crossover.clp)
 )
 

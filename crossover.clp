@@ -40,6 +40,7 @@
 * the user's profit will be double that absolute difference above the current price.
 */
 (defrule crossoverBuy "Only fires if the user should buy based on the crossover method."
+   (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
    (movingAverage5Crossed20 yes)
    (price ?p)
    (movingAverage5 ?ma5)
@@ -61,6 +62,7 @@
 * the user's profit will be double that absolute difference below the current price.
 */
 (defrule crossoverSell "Only fires if the user should sell based on the crossover method."
+   (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
    (movingAverage5Crossed20 yes)
    (price ?p)
    (movingAverage5 ?ma5)
@@ -78,6 +80,7 @@
 * they crossed but the 20 and 30 averages are not in the correct direction.
 */
 (defrule crossoverInviable "Only fires if the crossover is an inviable strategy."
+   (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
    (or 
       (movingAverage5Crossed20 no)
       (and 
@@ -88,6 +91,7 @@
    )
    =>
    (printline "The crossover failed as a viable strategy. Let's move onto the momentum strategy.")
+   (assert (crossover inviable))
    (batch finalproject/momentum.clp)
 )
 
