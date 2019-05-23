@@ -55,7 +55,7 @@
    (movingAverage21vs13 lesser)
    (movingAverage34vs21 lesser)
    =>
-   (printSolution "moving average Fibonacci" "buy" ?ma13 ?ma34 (+ ?ma13 (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma13 ?ma34))))
+   (printSolution "moving average Fibonacci" "buy" ?p ?ma34 (+ ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma13 ?ma34))))
 )
 
 /*
@@ -78,7 +78,7 @@
    (movingAverage21vs13 greater)
    (movingAverage34vs21 greater)
    =>
-   (printSolution "moving average Fibonacci" "sell" ?ma13 ?ma34 (- ?ma13 (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma34 ?ma13))))
+   (printSolution "moving average Fibonacci" "sell" ?p ?ma34 (- ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma34 ?ma13))))
 )
 
 /*
