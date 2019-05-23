@@ -19,6 +19,8 @@
 (defglobal ?*INVALID_YESNO_INPUT_MESSAGE* = "Your input must be either \"yes\" or \"no\". Please try again.")
 (defglobal ?*VALID_YES_CHARACTER* = "y") ; will accept any string starting with this as indicating "yes"
 (defglobal ?*VALID_NO_CHARACTER* = "n") ; will accept any string starting with this as indicating "no"
+(defglobal ?*DEFAULT_NUMBER_BASE* = 10.0) ; all numbers will be in base-10 unless specified; used for successsful truncation
+(defglobal ?*DEFAULT_TRUNCATION_DECIMAL_PLACES* = 6) ; all displayed numbers will be truncated to six decimal places
 
 /*
 * Starts up the system and explains to the user how to use it.
@@ -122,6 +124,15 @@
 )
 
 /*
+* Truncates a number (?num) to a given number of decimal places (?decimalPlaces). The number of decimal places must be
+* nonnegative for the function to work as expected.
+*/
+(deffunction truncateNum (?num ?decimalPlaces)
+   (bind ?multiplyVal (** ?*DEFAULT_NUMBER_BASE* ?decimalPlaces))
+   (return (/ (integer (* ?num ?multiplyVal)) ?multiplyVal))
+)
+
+/*
 * Prints out the solution based on the type of calculation performed (like moving average or Bollinger band), the action that
 * should be performed (either buying or selling), the amount of money which should be involved at this action, 
 * the amount of money after which the user should simply stop, and the amount of money after which the user should simply
@@ -129,6 +140,10 @@
 */
 (deffunction printSolution (?calculation ?action ?actionAmount ?stopAmount ?profitAmount)
    (printline "")
+   (bind ?actionAmount (truncateNum ?actionAmount ?*DEFAULT_TRUNCATION_DECIMAL_PLACES*))
+   (bind ?stopAmount (truncateNum ?stopAmount ?*DEFAULT_TRUNCATION_DECIMAL_PLACES*))
+   (bind ?profitAmount (truncateNum ?profitAmount ?*DEFAULT_TRUNCATION_DECIMAL_PLACES*))
+
    (printline (str-cat "Based on the " ?calculation " calculation, you should " ?action " at " ?actionAmount " and either stop at " ?stopAmount " or take a profit at " ?profitAmount "."))
    (assert (solutionFound))
    (return)
