@@ -38,6 +38,10 @@
    (if (< ?lowerBBPriceError ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR*) then (assert (priceEqualsLowerBB yes))
     else (assert (priceEqualsLowerBB no))
    )
+
+   (bind ?movingAverage20 (/ (+ ?upperBB ?lowerBB) 2)) ; the upper and lower Bollinger Bands are defined to be equidistant from the 20-period moving average
+   (assert (midBollingerBand ?movingAverage20))
+   (assert (movingAverage20 ?movingAverage20))
 )
 
 /*
