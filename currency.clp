@@ -21,12 +21,14 @@
 (defglobal ?*VALID_NO_CHARACTER* = "n") ; will accept any string starting with this as indicating "no"
 (defglobal ?*DEFAULT_NUMBER_BASE* = 10.0) ; all numbers will be in base-10 unless specified; used for successsful truncation
 (defglobal ?*DEFAULT_TRUNCATION_DECIMAL_PLACES* = 5) ; all displayed numbers will be truncated to six decimal places
+(defglobal ?*STARTUP_RULE_SALIENCE* = 100)
+(defglobal ?*NO_OPTIONS_RULE_SALIENCE* = -100)
 
 /*
 * Starts up the system and explains to the user how to use it.
 */
 (defrule startup "Starts up the system and provides basic instructions to the user."
-   (declare (salience 100)) ; guarantees that this rule will be run before all others by giving it a very high weight
+   (declare (salience ?*STARTUP_RULE_SALIENCE*)) ; guarantees that this rule will be run before all others by giving it a very high weight
    =>
    (printline "Welcome to the trading assistant.")
    (printline "Our first strategy will be to study the recent moving averages using the Fibonacci sequence.")
@@ -51,7 +53,7 @@
 * some time later.
 */
 (defrule outOfOptions "Fires when no options remain."
-   (declare (salience -100)) ; guarantees that this rule will be run after all others by giving it a low high weight
+   (declare (salience ?*NO_OPTIONS_RULE_SALIENCE*)) ; guarantees that this rule will be run after all others by giving it a low high weight
    (not (solutionFound))
    =>
    (printline "")
