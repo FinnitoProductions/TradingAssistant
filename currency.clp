@@ -28,7 +28,7 @@
 (defrule startup "Starts up the system and provides basic instructions to the user."
    (declare (salience 100)) ; guarantees that this rule will be run before all others by giving it a very high weight
    =>
-   (printline "Welcome to the stock market helper.")
+   (printline "Welcome to the trading assistant.")
    (printline "Our first strategy will be to study the recent moving averages using the Fibonacci sequence.")
    (printline "Find a chart comparing the US Dollar to the Canadian Dollar over the past 10 minutes.")
    (printline "Display three Fibonacci moving averages (13, 21, and 34) and answer the following questions.")
