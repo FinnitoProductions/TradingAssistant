@@ -10,10 +10,10 @@
 
 (do-backward-chaining momentum)
 
-(defglobal ?*MINIMUM_MOMENTUM_SELL* = 0.0025)
-(defglobal ?*MAXIMUM_MOMENTUM_BUY* = -0.0025)
-(defglobal ?*MOMENTUM_PROFIT_RANGE* = 0.002) ; the amount above or below the price after which the user should take a profit
-(defglobal ?*MOMENTUM_STOPLOSS_RANGE* = 0.002) ; the amount above or below the price after which the user should take a loss
+(defglobal ?*MINIMUM_MOMENTUM_SELL* = 0.00025)
+(defglobal ?*MAXIMUM_MOMENTUM_BUY* = -0.00025)
+(defglobal ?*MOMENTUM_PROFIT_RANGE* = 0.0002) ; the amount above or below the price after which the user should take a profit
+(defglobal ?*MOMENTUM_STOPLOSS_RANGE* = 0.0002) ; the amount above or below the price after which the user should take a loss
 
 /*
 * Fires when the user should buy using the momentum strategy - if the momentum is extremely negative (less than -0.0025), 
