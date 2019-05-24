@@ -76,8 +76,9 @@
 
 /*
 * Fires when the crossover method is inviable, allowing any future strategies to be executed.
+*
 * The crossover method is inviable if the 20-period and 5-period moving averages did not cross or if 
-* they crossed but the 20 and 30 averages are not in the correct direction.
+* they crossed but the 20-period and 30-period moving averages are not in the correct direction.
 */
 (defrule crossoverInviable "Only fires if the crossover is an inviable strategy."
    (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
@@ -94,6 +95,11 @@
    (assert (crossover inviable))
    (batch finalproject/momentum.clp)
 )
+
+/*
+* The following rules are all backward-chained and ask the user about a given piece of market information when
+* it is necessary to determine whether a rule can fire.
+*/
 
 (defrule askMovingAverage5Crossed20 "Asks the user whether the 5-period moving average has crossed the 20-period moving average."
    (need-movingAverage5Crossed20 ?)

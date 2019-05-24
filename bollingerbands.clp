@@ -42,7 +42,9 @@
 
 /*
 * Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
-* out of the market, using the Bollinger band method.
+* out of the market, using the Bollinger Band method.
+*
+* The 
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
@@ -94,6 +96,11 @@
 (deffunction askBollingerBand (?location)
    (return (askForNumber (str-cat "What is the current value of the " ?location "-Bollinger Band")))
 )
+
+/*
+* The following rules are all backward-chained and ask the user about a given piece of market information when
+* it is necessary to determine whether a rule can fire.
+*/
 
 (defrule askMidBollingerBand "Asks about the mid-Bollinger band."
    (need-midBollingerBand ?)

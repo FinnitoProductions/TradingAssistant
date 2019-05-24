@@ -36,7 +36,7 @@
 )
 
 /*
-* Fires when the user should buy when the price crosses the 13-period moving average, using the moving average strategy.
+* Fires when the user should buy using the moving average strategy.
 *
 * If the 34-period moving average is below the 21-period moving average, the 21-period moving average is below the 
 * 13-period moving average, and the 13-period moving average is below the stock price, this is indicative that the market
@@ -59,7 +59,7 @@
 )
 
 /*
-* Fires when the user should sell when the price crosses the 13-period moving average, using the moving average strategy.
+* Fires when the user should sell using the moving average strategy.
 *
 * If the 34-period moving average is above the 21-period moving average, the 21-period moving average is above the 
 * 13-period moving average, and the 13-period moving average is above the stock price, this is indicative that the market
@@ -83,7 +83,7 @@
 
 /*
 * Fires when the moving average method is inviable, allowing any future strategies to be executed.
-* The average method is only inviable if the three relevant comparisons of moving averages and prices are not either
+* The average method is only inviable if the three relevant comparisons of moving averages and price are not either
 * all lesser or all greater.
 */
 (defrule movingAverageFibInviable "Fires if the moving average cannot determine a plan of action."
