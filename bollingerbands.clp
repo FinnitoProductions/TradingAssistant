@@ -1,9 +1,9 @@
 /*
 * Contains all the rules and functions related to solving the problem using the Bollinger Band strategy.
 * 
-* The Bollinger Band strategy first determines whether the current price is between the upper and lower Bollinger Bands.
-* If so, the user will buy if the price is below the mid (average Bollinger Band), and the user will sell if the price is 
-* above the mid Bollinger Band. 
+* The Bollinger Band strategy succeeds if the upper or lower Bollinger Band is within 0.01% of the current price.
+* If the upper Bollinger Band is within 0.01% of the current price, you should sell; if the lower Bollinger Band is within
+* 0.01% of the current price, you should buy.
 *
 * Finn Frankis
 * May 17, 2019
@@ -13,15 +13,30 @@
 (do-backward-chaining lowerBollingerBand)
 (do-backward-chaining midBollingerBand)
 
-(defglobal ?*BOLLINGER_BAND_GAP_FACTOR* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
+(defglobal ?*BOLLINGER_BAND_LOSS_GAP_FACTOR* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
 
-(defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is between the two Bollinger bands."
+/*
+* The factor away from the price the upper or lower Bollinger Band can be to be considered equal to the current price. 
+*/
+(defglobal ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR* = 0.0001)
+
+/*
+* Determines whether the price can be considered equal to either the upper or lower Bollinger Band.
+*/
+(defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is equal to the upper or lower Bollinger Band."
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    =>
-   (if (and (> ?p ?lowerBB) (< ?p ?upperBB)) then (assert (priceBetweenUpperAndLowerBB yes))
-    else (assert (priceBetweenUpperAndLowerBB no))
+   (bind ?upperBBPriceError (abs (/ (- ?p ?upperBB) ?p)))
+   (bind ?lowerBBPriceError (abs (/ (- ?p ?lowerBB) ?p)))
+
+   (if (< ?upperBBPriceError ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR*) then (assert (priceEqualsUpperBB yes))
+    else (assert (priceEqualsUpperBB no))
+   )
+
+   (if (< ?lowerBBPriceError ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR*) then (assert (priceEqualsLowerBB yes))
+    else (assert (priceEqualsLowerBB no))
    )
 )
 
@@ -30,16 +45,15 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
-   (not (bollingerBand inviable))
-   (priceBetweenUpperAndLowerBB yes)
+   (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
+   (priceEqualsLowerBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
-   (test (< ?p ?midBB))
    =>
-   (bind ?stopLoss (- ?lowerBB (* ?*BOLLINGER_BAND_GAP_FACTOR* (- ?midBB ?lowerBB))))
-   (printSolution "bollinger band" "buy" ?lowerBB ?stopLoss ?midBB)
+   (bind ?stopLoss (- ?p (* ?*BOLLINGER_BAND_LOSS_GAP_FACTOR* (- ?midBB ?lowerBB))))
+   (printSolution "Bollinger Band" "buy" ?p ?stopLoss ?midBB)
 )
 
 /*
@@ -47,16 +61,15 @@
 * out of the market, using the Bollinger band method.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
-   (not (bollingerBand inviable))
-   (priceBetweenUpperAndLowerBB yes)
+   (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
+   (priceEqualsUpperBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
-   (test (> ?p ?midBB))
    =>
-   (bind ?stopLoss (+ ?upperBB (* ?*BOLLINGER_BAND_GAP_FACTOR* (- ?upperBB ?midBB))))
-   (printSolution "Bollinger Band" "sell" ?upperBB ?stopLoss ?midBB)
+   (bind ?stopLoss (+ ?p (* ?*BOLLINGER_BAND_LOSS_GAP_FACTOR* (- ?upperBB ?midBB))))
+   (printSolution "Bollinger Band" "sell" ?p ?stopLoss ?midBB)
 )
 
 /*
@@ -68,11 +81,7 @@
 */
 (defrule bollingerBandInviable "Fires if the Bollinger Band cannot determine a plan of action."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
-   (price ?p)
-   (upperBollingerBand ?upperBB)
-   (lowerBollingerBand ?lowerBB)
-   (midBollingerBand ?midBB)
-   (or (priceBetweenUpperAndLowerBB no) (test (> ?lowerBB ?upperBB)) (test (eq ?p ?midBB)))
+   (and (priceEqualsUpperBB no) (priceEqualsLowerBB no))
    =>
    (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
    (assert (bollingerBand inviable)) ; asserts inviability so that no future Bollinger Band rules can be fired
