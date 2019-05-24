@@ -99,8 +99,8 @@
 )
 
 /*
-* Asks the user for the moving average based on a given number of readings ?readingNum. Returns the numeric result
-* of this request.
+* Asks the user for the moving average based on a given number of readings ?readingNum, represented as string.
+* Returns the numeric result of this request.
 */
 (deffunction askMovingAverage (?readingNum)
    (return (askForNumber (str-cat "What is the current moving average based on the last " ?readingNum " readings")))
@@ -114,17 +114,17 @@
 (defrule askMovingAverage13 "Asks about the current moving average based on the last 13 readings."
    (need-movingAverage13 ?)
    =>
-   (assert (movingAverage13 (askMovingAverage 13)))
+   (assert (movingAverage13 (askMovingAverage "13")))
 )
 
 (defrule askMovingAverage21 "Asks about the current moving average based on the last 21 readings."
    (need-movingAverage21 ?)
    =>
-   (assert (movingAverage21 (askMovingAverage 21)))
+   (assert (movingAverage21 (askMovingAverage "21")))
 )
 
 (defrule askMovingAverage34 "Asks about the current moving average based on the last 34 readings."
    (need-movingAverage34 ?)
    =>
-   (assert (movingAverage34 (askMovingAverage 34)))
+   (assert (movingAverage34 (askMovingAverage "34")))
 )

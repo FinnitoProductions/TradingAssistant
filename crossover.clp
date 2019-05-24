@@ -14,7 +14,10 @@
 (do-backward-chaining movingAverage20)
 (do-backward-chaining movingAverage30)
 
-(defglobal ?*CROSSOVER_GAP_FACTOR* = 2) ; the factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit
+/*
+* The factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit.
+*/
+(defglobal ?*CROSSOVER_GAP_FACTOR* = 2) 
 
 /*
 * Compares the 5-period moving average to the 20-period moving average and the 20-period moving average to the 30-period moving average
@@ -110,17 +113,17 @@
 (defrule askMovingAverage5 "Asks about the current moving average based on the last 5 readings."
    (need-movingAverage5 ?)
    =>
-   (assert (movingAverage5 (askMovingAverage 5)))
+   (assert (movingAverage5 (askMovingAverage "5")))
 )
 
 (defrule askMovingAverage20 "Asks about the current moving average based on the last 20 readings."
    (need-movingAverage20 ?)
    =>
-   (assert (movingAverage20 (askMovingAverage 20)))
+   (assert (movingAverage20 (askMovingAverage "20")))
 )
 
 (defrule askMovingAverage30 "Asks about the current moving average based on the last 30 readings."
    (need-movingAverage30 ?)
    =>
-   (assert (movingAverage30 (askMovingAverage 30)))
+   (assert (movingAverage30 (askMovingAverage "30")))
 )

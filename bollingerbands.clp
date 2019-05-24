@@ -16,7 +16,7 @@
 (defglobal ?*BOLLINGER_BAND_LOSS_GAP_FACTOR* = 0.5) ; the factor either above or below the top Bollinger band at which you should take a loss
 
 /*
-* The factor away from the price the upper or lower Bollinger Band can be to be considered equal to the current price. 
+* The factor away from the price that the upper or lower Bollinger Band can be to be considered equal to the current price (0.01%).
 */
 (defglobal ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR* = 0.0001)
 
@@ -48,7 +48,8 @@
 * Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market, using the Bollinger Band method.
 *
-* The 
+* If the price is approximately equal to the lower Bollinger Band, the user should buy with a profit equal to the mid-Bollinger Band
+* and a stop-loss equal to half the distance between the mid and lower Bollinger Band below the current price.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
@@ -65,6 +66,9 @@
 /*
 * Fires when the user should sell with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market, using the Bollinger band method.
+*
+* If the price is approximately equal to the upper Bollinger Band, the user should buy with a profit equal to the mid-Bollinger Band
+* and a stop-loss equal to half the distance between the upper and mid Bollinger Band above the current price.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
@@ -81,9 +85,7 @@
 /*
 * Fires when the Bollinger Band method is inviable, allowing any future strategies to be executed.
 *
-* The Bollinger Band method is only inviable if the price is not within the Bollinger band,
-* if the price is exactly equal to the mid-Bollinger band, or if the lower Bollinger band is above
-* the upper Bollinger band.
+* The Bollinger Band method is only inviable if the price is not approximately equal to either the upper or lower Bollinger Band.
 */
 (defrule bollingerBandInviable "Fires if the Bollinger Band cannot determine a plan of action."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
