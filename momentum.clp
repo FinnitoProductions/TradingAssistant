@@ -25,7 +25,7 @@
    (not (momentumStrategy inviable)) ; this rule cannot fire if the momentum strategy has already been deemed inviable
    (price ?p)
    (momentum ?m)
-   (test (< ?m ?*MAXIMUM_MOMENTUM_BUY*)) ; the momentum is an extremely negative number
+   (test (< ?m ?*MAXIMUM_MOMENTUM_BUY*)) ; the momentum is an extremely negative number, symbolizing volatility
    =>
    (printSolution "momentum" "buy" ?p (- ?p ?*MOMENTUM_STOPLOSS_RANGE*) (+ ?p ?*MOMENTUM_PROFIT_RANGE*))
 )
@@ -50,7 +50,6 @@
 */
 (defrule momentumInviable "Fires if the momentum cannot be used to determine a strategy."
    (not (momentumStrategy inviable)) ; this rule cannot fire if the momentum strategy has already been deemed inviable
-   (price ?p)
    (momentum ?m)
    (test (and (< ?m ?*MINIMUM_MOMENTUM_SELL*) (> ?m ?*MAXIMUM_MOMENTUM_BUY*)))
    =>

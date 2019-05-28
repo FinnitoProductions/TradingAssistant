@@ -81,7 +81,8 @@
 * Fires when the crossover method is inviable, allowing any future strategies to be executed.
 *
 * The crossover method is inviable if the 20-period and 5-period moving averages did not cross or if 
-* they crossed but the 20-period and 30-period moving averages are not in the correct direction.
+* the 5-period moving average, the 20-period moving average, and the 30-period moving average are in the correct
+* order relative to one another.
 */
 (defrule crossoverInviable "Only fires if the crossover is an inviable strategy."
    (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
@@ -100,8 +101,8 @@
 )
 
 /*
-* The following rules are all backward-chained and ask the user about a given piece of market information when
-* it is necessary to determine whether a rule can fire.
+* The following rules are all backward-chained and ask the user about a given piece of market information based around
+* the moving average crossover strategy when it is necessary to determine whether a rule can fire.
 */
 
 (defrule askMovingAverage5Crossed20 "Asks the user whether the 5-period moving average has crossed the 20-period moving average."

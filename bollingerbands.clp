@@ -3,7 +3,8 @@
 * 
 * The Bollinger Band strategy succeeds if the upper or lower Bollinger Band is within 0.01% of the current price.
 * If the upper Bollinger Band is within 0.01% of the current price, you should sell; if the lower Bollinger Band is within
-* 0.01% of the current price, you should buy.
+* 0.01% of the current price, you should buy. Bollinger Bands are the lines plotted two standard deviations above and below
+* the 20-period moving average.
 *
 * Finn Frankis
 * May 17, 2019
@@ -49,7 +50,7 @@
 * out of the market, using the Bollinger Band method.
 *
 * If the price is approximately equal to the lower Bollinger Band, the user should buy with a profit equal to the mid-Bollinger Band
-* and a stop-loss equal to half the distance between the mid and lower Bollinger Band below the current price.
+* and a stop-loss equal to half the distance between the mid and lower Bollinger Band, below the current price.
 */
 (defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
@@ -67,8 +68,8 @@
 * Fires when the user should sell with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market, using the Bollinger band method.
 *
-* If the price is approximately equal to the upper Bollinger Band, the user should buy with a profit equal to the mid-Bollinger Band
-* and a stop-loss equal to half the distance between the upper and mid Bollinger Band above the current price.
+* If the price is approximately equal to the upper Bollinger Band, the user should sell with a profit equal to the mid-Bollinger Band
+* and a stop-loss equal to half the distance between the upper and mid Bollinger Band, above the current price.
 */
 (defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
@@ -104,8 +105,8 @@
 )
 
 /*
-* The following rules are all backward-chained and ask the user about a given piece of market information when
-* it is necessary to determine whether a rule can fire.
+* The following rules are all backward-chained and ask the user about a given piece of market information based on the Bollinger
+* Band strategy when it is necessary to determine whether a rule can fire.
 */
 
 (defrule askMidBollingerBand "Asks about the mid-Bollinger band."

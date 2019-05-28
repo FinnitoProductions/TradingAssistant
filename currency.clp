@@ -39,14 +39,13 @@
 )
 
 /*
-* Fires when the system needs to know the current price of the market.
+* Fires, using backward chaining, when the system needs to know the current price of the market.
 */
 (defrule askPrice "Asks about the current price."
    (need-price ?)
    =>
    (assert (price (askForNumber "What is the current price of stock")))
 )
-
 
 /*
 * Fires when the system has no more questions to ask the user - this indicates they should wait and return to the market
@@ -112,9 +111,9 @@
 )
 
 /*
-* Asserts the result of a comparison between two values into the factbase with the format (?factName lesser), (?factName greater),
+* Compares two values and asserts the result into the factbase with the format (?factName lesser), (?factName greater),
 * or (?factName equal). If ?firstVal is less than ?secondVal, will assert with "lesser"; if ?firstVal is greater than ?secondVal,
-* will assert with "greater".
+* will assert with "greater"; otherwise will assert with "equal".
 */
 (deffunction assertComparison (?factName ?firstVal ?secondVal)
    (if (< ?firstVal ?secondVal) then (assert-string (str-cat "(" ?factName " lesser)"))
@@ -139,6 +138,8 @@
 * should be performed (either buying or selling), the amount of money which should be involved in this action, 
 * the amount of money after which the user should simply stop, and the amount of money after which the user should simply
 * take a profit.
+*
+* The solution will always be truncated to 5 decimal places.
 */
 (deffunction printSolution (?calculation ?action ?currentPrice ?stopAmount ?profitAmount)
    (printline "")
@@ -152,7 +153,7 @@
 )
 
 /*
-* Ends the system's operation by resetting and stopping the rule engine.
+* Ends the system's operation by stopping the rule engine.
 */
 (deffunction endSystem ()
    (halt) ; stops the rule engine from running to ensure no more questions are asked
@@ -163,9 +164,9 @@
 * Begins the system by clearing out the rule engine and running it.
 */
 (deffunction runSystem ()
-   (clear)
+   (clear) ; clear the JESS system to eliminate all knowledge islands
    (reset)
-   (batch finalproject/currency.clp)
+   (batch finalproject/currency.clp) ; batch in the main file again to begin again after the (clear)
    (run)
    (endSystem)
    (return)

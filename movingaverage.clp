@@ -2,7 +2,7 @@
 * Contains all the rules and functions related to solving the problem using the moving average Fibonacci strategy.
 * 
 * The moving average Fibonacci strategy compares the price with the 13-period, 21-period, and 34-period moving averages. The user can
-* sell using this strategy if, in the order above, each one is greater than the next. The user can sell if, in the order above
+* buy using this strategy if, in the order above, each one is greater than the next. The user can sell if, in the order above,
 * each one is lesser than the next.
 * 
 * Finn Frankis
@@ -42,18 +42,17 @@
 * 13-period moving average, and the 13-period moving average is below the stock price, this is indicative that the market
 * is in an down-trend and thus the user should buy because it is likely to come back up (stabilize) soon.
 *
-* The stop loss will be when the price crosses the 34-period moving average. 
+* The stop loss will be when the price crosses the 34-period moving average.
 * The profit is twice the distance between the 13-period moving average and the 34-period moving average.
 */
 (defrule movingAverageFibBuy "Only fires if the user should buy based on the moving average method."
    (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
-   (price ?p)
-   (movingAverage13 ?ma13)
-   (movingAverage21 ?ma21)
-   (movingAverage34 ?ma34)
    (movingAverage13vsStockPrice lesser)
    (movingAverage21vs13 lesser)
    (movingAverage34vs21 lesser)
+   (price ?p)
+   (movingAverage13 ?ma13)
+   (movingAverage34 ?ma34)
    =>
    (printSolution "moving average Fibonacci" "buy" ?p ?ma34 (+ ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma13 ?ma34))))
 )
@@ -70,13 +69,12 @@
 */
 (defrule movingAverageFibSell "Only fires if the user should sell based on the moving average method."
    (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
-   (price ?p)
-   (movingAverage13 ?ma13)
-   (movingAverage21 ?ma21)
-   (movingAverage34 ?ma34)
    (movingAverage13vsStockPrice greater)
    (movingAverage21vs13 greater)
    (movingAverage34vs21 greater)
+   (price ?p)
+   (movingAverage13 ?ma13)
+   (movingAverage34 ?ma34)
    =>
    (printSolution "moving average Fibonacci" "sell" ?p ?ma34 (- ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma34 ?ma13))))
 )
@@ -107,8 +105,8 @@
 )
 
 /*
-* The following rules are all backward-chained and ask the user about a given piece of market information when
-* it is necessary to determine whether a rule can fire.
+* The following rules are all backward-chained and ask the user about a given piece of market information based on the moving 
+* average strategy when it is necessary to determine whether a rule can fire.
 */
 
 (defrule askMovingAverage13 "Asks about the current moving average based on the last 13 readings."
