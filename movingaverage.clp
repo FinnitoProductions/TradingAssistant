@@ -40,7 +40,7 @@
 *
 * If the 34-period moving average is below the 21-period moving average, the 21-period moving average is below the 
 * 13-period moving average, and the 13-period moving average is below the stock price, this is indicative that the market
-* is in an down-trend and thus the user should buy because it is likely to come back up (stabilize) soon.
+* is in a down-trend and thus the user should buy because it is likely to come back up (stabilize) soon.
 *
 * The stop loss will be when the price crosses the 34-period moving average.
 * The profit is twice the distance between the 13-period moving average and the 34-period moving average.
