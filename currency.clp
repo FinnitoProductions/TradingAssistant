@@ -17,9 +17,9 @@
 
 (defglobal ?*INVALID_NUMBER_INPUT_MESSAGE* = "Your input must be a number. Please try again.")
 (defglobal ?*INVALID_YESNO_INPUT_MESSAGE* = "Your input must be either \"yes\" or \"no\". Please try again.")
-(defglobal ?*VALID_YES_CHARACTER* = "y") ; will accept any string starting with this as indicating "yes"
-(defglobal ?*VALID_NO_CHARACTER* = "n") ; will accept any string starting with this as indicating "no"
-(defglobal ?*DEFAULT_NUMBER_BASE* = 10.0) ; all numbers will be in base-10 unless specified; used for successsful truncation
+(defglobal ?*VALID_YES_CHARACTER* = "y")             ; will accept any string starting with this as indicating "yes"
+(defglobal ?*VALID_NO_CHARACTER* = "n")              ; will accept any string starting with this as indicating "no"
+(defglobal ?*DEFAULT_NUMBER_BASE* = 10.0)            ; all numbers will be in base-10 unless specified; used for successsful truncation
 (defglobal ?*DEFAULT_TRUNCATION_DECIMAL_PLACES* = 5) ; all displayed numbers will be truncated to five decimal places
 (defglobal ?*STARTUP_RULE_SALIENCE* = 100)
 (defglobal ?*NO_OPTIONS_RULE_SALIENCE* = -100)
