@@ -22,14 +22,14 @@
 (defglobal ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR* = 0.0001)
 
 /*
-* Determines whether the price can be considered equal to either the upper or lower Bollinger Band.
+* Determines whether the price can be considered equal to either the upper or lower Bollinger Bands.
 */
 (defrule equatePriceWithUpperandLowerBollingerBands "Determines whether or not the price is equal to the upper or lower Bollinger Band."
    (price ?p)
    (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    =>
-   (bind ?upperBBPriceError (abs (/ (- ?p ?upperBB) ?p)))
+   (bind ?upperBBPriceError (abs (/ (- ?p ?upperBB) ?p))) ; determine how close the upper and lower BB are to the current price
    (bind ?lowerBBPriceError (abs (/ (- ?p ?lowerBB) ?p)))
 
    (if (< ?upperBBPriceError ?*BOLLINGER_BAND_EQUALITY_GAP_FACTOR*) then (assert (priceEqualsUpperBB yes))
@@ -40,23 +40,26 @@
     else (assert (priceEqualsLowerBB no))
    )
 
-   (bind ?movingAverage20 (/ (+ ?upperBB ?lowerBB) 2)) ; the upper and lower Bollinger Bands are defined to be equidistant from the 20-period moving average
+   /*
+   * Because the upper and lower Bollinger Bands are defined to be equidistant from the 20-period moving average,
+   * the 20-period moving average is equal to the average of the upper and lower Bollinger Bands.
+   */
+   (bind ?movingAverage20 (/ (+ ?upperBB ?lowerBB) 2))
    (assert (midBollingerBand ?movingAverage20))
    (assert (movingAverage20 ?movingAverage20))
-)
+) ; equatePriceWithUpperAndLowerBollingerBands
 
 /*
 * Fires when the user should buy with a certain amount and lets them know when they should stop and when they should pull 
 * out of the market, using the Bollinger Band method.
 *
 * If the price is approximately equal to the lower Bollinger Band, the user should buy with a profit equal to the mid-Bollinger Band
-* and a stop-loss equal to half the distance between the mid and lower Bollinger Band, below the current price.
+* and a stop-loss equal to half the distance between the mid and lower Bollinger Band.
 */
-(defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger band method."
+(defrule bollingerBandBuy "Only fires when the user should buy with the Bollinger Band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
    (priceEqualsLowerBB yes)
    (price ?p)
-   (upperBollingerBand ?upperBB)
    (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
    =>
@@ -69,14 +72,13 @@
 * out of the market, using the Bollinger band method.
 *
 * If the price is approximately equal to the upper Bollinger Band, the user should sell with a profit equal to the mid-Bollinger Band
-* and a stop-loss equal to half the distance between the upper and mid Bollinger Band, above the current price.
+* and a stop-loss equal to half the distance between the upper and mid Bollinger Band.
 */
-(defrule bollingerBandSell "Only fires when the user should sell with the Bollinger band method."
+(defrule bollingerBandSell "Only fires when the user should sell with the Bollinger Band method."
    (not (bollingerBand inviable)) ; this rule cannot fire if the Bollinger Band strategy has already been deemed inviable
    (priceEqualsUpperBB yes)
    (price ?p)
    (upperBollingerBand ?upperBB)
-   (lowerBollingerBand ?lowerBB)
    (midBollingerBand ?midBB)
    =>
    (bind ?stopLoss (+ ?p (* ?*BOLLINGER_BAND_LOSS_GAP_FACTOR* (- ?upperBB ?midBB))))
@@ -98,7 +100,8 @@
 )
 
 /*
-* Asks the user for the Bollinger band given the location (mid, upper, or lower).
+* Asks the user for the Bollinger band of a given location ?location (mid, upper, or lower). Returns the numerical
+* result of this query.
 */
 (deffunction askBollingerBand (?location)
    (return (askForNumber (str-cat "What is the current value of the " ?location "-Bollinger Band")))

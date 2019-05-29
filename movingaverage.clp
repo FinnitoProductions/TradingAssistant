@@ -91,9 +91,9 @@
    (movingAverage34vs21 ?z)
    (test (not (or (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)) (and (eq ?x greater) (eq ?y greater) (eq ?z greater)))))
    =>
-   (assert (movingAverageFib inviable)) 
-   (batch finalproject/bollingerbands.clp)
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
+   (assert (movingAverageFib inviable))    ; asserts inviability so that no future moving average rules can be fired
+   (batch finalproject/bollingerbands.clp) ; move onto the Bollinger Band strategy
 )
 
 /*
