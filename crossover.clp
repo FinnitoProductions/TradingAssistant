@@ -3,7 +3,7 @@
 *
 * The moving average crossover strategy is viable if the 20-period and 5-period moving averages have crossed.
 * Using this, it compares the 5-period and 20-moving averages to the current value of the 30-period moving average to
-* determine whether the user can buy or sell, or if the system is inconclusive.
+* determine whether the user can buy or sell, or if the strategy is inconclusive.
 * 
 * Finn Frankis
 * May 18, 2019
@@ -17,13 +17,13 @@
 /*
 * The factor of the difference between the 20- and 30-period moving average from the price after which you should take a profit.
 */
-(defglobal ?*CROSSOVER_GAP_FACTOR* = 2) 
+(defglobal ?*CROSSOVER_PROFIT_GAP_FACTOR* = 2) 
 
 /*
 * Compares the 5-period moving average to the 20-period moving average and the 20-period moving average to the 30-period moving average
 * and asserts the comparisons as facts.
 */
-(defrule equateMovingAveragesCrossover "Equates the stock price as well as the 13-period, 21-period, and 34-period moving averages with one another."
+(defrule equateMovingAveragesCrossover "Equates the 5-period, 20-period, and 30-period moving averages with one another."
    (movingAverage5Crossed20 yes)
    (movingAverage5 ?ma5)
    (movingAverage20 ?ma20)
@@ -39,21 +39,20 @@
 * If the 20-period moving average has crossed below the 5-period moving average and the 30-period moving average is below
 * the 20-period moving average, then the user can buy at the current price. 
 *
-* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average below the current price;
-* the user's profit will be double that absolute difference above the current price.
+* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average;
+* the user's profit will be double that absolute difference.
 */
 (defrule crossoverBuy "Only fires if the user should buy based on the crossover method."
    (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
    (movingAverage5Crossed20 yes)
-   (price ?p)
-   (movingAverage5 ?ma5)
-   (movingAverage20 ?ma20)
-   (movingAverage30 ?ma30)
    (movingAverage5vs20 greater)
    (movingAverage20vs30 greater)
+   (price ?p)
+   (movingAverage20 ?ma20)
+   (movingAverage30 ?ma30)
    =>
-   (printSolution "moving average crossover" "buy" ?p (- ?p (- ?ma20 ?ma30)) (+ ?p (* ?*CROSSOVER_GAP_FACTOR* (- ?ma20 ?ma30))))
-)
+   (printSolution "moving average crossover" "buy" ?p (- ?p (- ?ma20 ?ma30)) (+ ?p (* ?*CROSSOVER_PROFIT_GAP_FACTOR* (- ?ma20 ?ma30))))
+) ; crossoverBuy
 
 /*
 * Fires when the user should sell at the current price using the crossover strategy.
@@ -61,28 +60,27 @@
 * If the 20-period moving average has crossed above the 5-period moving average and the 30-period moving average is above
 * the 20-period moving average, then the user can sell at the current price. 
 *
-* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average above the current price;
-* the user's profit will be double that absolute difference below the current price.
+* The user's stop loss will be the absolute difference between the 20-period and 30-period moving average;
+* the user's profit will be double that absolute difference.
 */
 (defrule crossoverSell "Only fires if the user should sell based on the crossover method."
    (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
    (movingAverage5Crossed20 yes)
-   (price ?p)
-   (movingAverage5 ?ma5)
-   (movingAverage20 ?ma20)
-   (movingAverage30 ?ma30)
    (movingAverage5vs20 lesser)
    (movingAverage20vs30 lesser)
+   (price ?p)
+   (movingAverage20 ?ma20)
+   (movingAverage30 ?ma30)
    =>
-   (printSolution "moving average crossover" "sell" ?p (+ ?p (- ?ma20 ?ma30)) (- ?p (* ?*CROSSOVER_GAP_FACTOR* (- ?ma20 ?ma30))))
-)
+   (printSolution "moving average crossover" "sell" ?p (+ ?p (- ?ma20 ?ma30)) (- ?p (* ?*CROSSOVER_PROFIT_GAP_FACTOR* (- ?ma20 ?ma30))))
+) ; crossoverSell
 
 /*
 * Fires when the crossover method is inviable, allowing any future strategies to be executed.
 *
 * The crossover method is inviable if the 20-period and 5-period moving averages did not cross or if 
-* the 5-period moving average, the 20-period moving average, and the 30-period moving average are in the correct
-* order relative to one another.
+* the 5-period moving average, the 20-period moving average, and the 30-period moving average are not in the correct
+* order relative to one another (see crossoverBuy and crossoverSell rules).
 */
 (defrule crossoverInviable "Only fires if the crossover is an inviable strategy."
    (not (crossover inviable)) ; this rule cannot fire if the crossover strategy has already been deemed inviable
@@ -96,9 +94,9 @@
    )
    =>
    (printline "The crossover failed as a viable strategy. Let's move onto the momentum strategy.")
-   (assert (crossover inviable))
-   (batch finalproject/momentum.clp)
-)
+   (assert (crossover inviable)) ; asserts inviability so that no future crossover rules can be fired
+   (batch finalproject/momentum.clp) ; move onto momentum strategy
+) ; crossoverInviable
 
 /*
 * The following rules are all backward-chained and ask the user about a given piece of market information based around

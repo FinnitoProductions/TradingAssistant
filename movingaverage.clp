@@ -9,7 +9,6 @@
 * May 17, 2019
 */
 
-(do-backward-chaining price)
 (do-backward-chaining movingAverage13)
 (do-backward-chaining movingAverage21)
 (do-backward-chaining movingAverage34)
@@ -55,7 +54,7 @@
    (movingAverage34 ?ma34)
    =>
    (printSolution "moving average Fibonacci" "buy" ?p ?ma34 (+ ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma13 ?ma34))))
-)
+) ; movingAverageFibBuy
 
 /*
 * Fires when the user should sell using the moving average strategy.
@@ -77,7 +76,7 @@
    (movingAverage34 ?ma34)
    =>
    (printSolution "moving average Fibonacci" "sell" ?p ?ma34 (- ?p (* ?*MOVING_AVERAGE_PROFIT_GAP_FACTOR* (- ?ma34 ?ma13))))
-)
+) ; movingAverageFibSell
 
 /*
 * Fires when the moving average method is inviable, allowing any future strategies to be executed.
@@ -94,7 +93,7 @@
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
    (assert (movingAverageFib inviable))    ; asserts inviability so that no future moving average rules can be fired
    (batch finalproject/bollingerbands.clp) ; move onto the Bollinger Band strategy
-)
+) ; movingAverageFibInviable
 
 /*
 * Asks the user for the moving average based on a given number of readings ?readingNum, represented as string.

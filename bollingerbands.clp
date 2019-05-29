@@ -96,7 +96,7 @@
    =>
    (printline "The Bollinger Band failed as a viable strategy. Let's move onto the crossover strategy.")
    (assert (bollingerBand inviable)) ; asserts inviability so that no future Bollinger Band rules can be fired
-   (batch finalproject/crossover.clp)
+   (batch finalproject/crossover.clp) ; move onto crossover strategy
 )
 
 /*

@@ -15,6 +15,8 @@
 
 (batch util/utilities.clp)
 
+(do-backward-chaining price)
+
 (defglobal ?*INVALID_NUMBER_INPUT_MESSAGE* = "Your input must be a number. Please try again.")
 (defglobal ?*INVALID_YESNO_INPUT_MESSAGE* = "Your input must be either \"yes\" or \"no\". Please try again.")
 (defglobal ?*VALID_YES_CHARACTER* = "y")             ; will accept any string starting with this as indicating "yes"
@@ -36,7 +38,7 @@
    (printline "Display three Fibonacci moving averages (13, 21, and 34) and answer the following questions.")
    (printline "")
    (batch finalproject/movingaverage.clp)
-)
+) ; startup
 
 /*
 * Fires, using backward chaining, when the system needs to know the current price of the market.
@@ -150,7 +152,7 @@
    (printline (str-cat "Based on the " ?calculation " calculation, you should " ?action " at " ?currentPrice " and either stop at " ?stopAmount " or take a profit at " ?profitAmount "."))
    (assert (solutionFound))
    (return)
-)
+) ; printSolution (?calculation ?action ?currentPrice ?stopAmount ?profitAmount)
 
 /*
 * Ends the system's operation by stopping the rule engine.
