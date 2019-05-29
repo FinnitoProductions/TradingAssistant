@@ -3,7 +3,7 @@
 * 
 * The moving average Fibonacci strategy compares the price with the 13-period, 21-period, and 34-period moving averages. The user can
 * buy using this strategy if, in the order above, each one is greater than the next. The user can sell if, in the order above,
-* each one is lesser than the next.
+* each one is less than the next.
 * 
 * Finn Frankis
 * May 17, 2019
@@ -81,8 +81,8 @@
 
 /*
 * Fires when the moving average method is inviable, allowing any future strategies to be executed.
-* The average method is only inviable if the three relevant comparisons of moving averages and price are not either
-* all lesser or all greater.
+* The moving average method is only inviable if the three relevant comparisons of moving averages and price (listed in the
+* file header) are not either all lesser or all greater.
 */
 (defrule movingAverageFibInviable "Fires if the moving average cannot determine a plan of action."
    (not (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
@@ -91,7 +91,7 @@
    (movingAverage34vs21 ?z)
    (test (not (or (and (eq ?x lesser) (eq ?y lesser) (eq ?z lesser)) (and (eq ?x greater) (eq ?y greater) (eq ?z greater)))))
    =>
-   (assert (movingAverageFib inviable)) ; this rule cannot fire if the moving average Fibonacci strategy has already been deemed inviable
+   (assert (movingAverageFib inviable)) 
    (batch finalproject/bollingerbands.clp)
    (printline "The moving average failed as a viable strategy. Let's move onto the Bollinger Band strategy.")
 )
@@ -106,7 +106,7 @@
 
 /*
 * The following rules are all backward-chained and ask the user about a given piece of market information based on the moving 
-* average strategy when it is necessary to determine whether a rule can fire.
+* average strategy when it is necessary to determine whether a rule can fire. They assert the data given into the factbase.
 */
 
 (defrule askMovingAverage13 "Asks about the current moving average based on the last 13 readings."
