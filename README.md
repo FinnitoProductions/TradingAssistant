@@ -1,4 +1,4 @@
-# StockMarketHelper
+# TradingAssistant
 Code for my final project in my expert systems course with the knowledge base compiled from the knowledge of expert Michael Frankis, a former currency trader for several decades.
 
 Determines whether the user should buy, sell, or wait based on the current state of the market. If a decision is
